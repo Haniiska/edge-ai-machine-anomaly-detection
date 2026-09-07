@@ -109,14 +109,6 @@ $$\text{Fault State} = \begin{cases} \text{CRITICAL ANOMALY}, & \text{if } Z \ge
 
 ---
 
-## 🎨 Master Academic Research Poster (300 DPI)
-
-<p align="center">
-  <img src="docs/figures/poster_master.png" alt="Master Academic Poster" width="800"/>
-</p>
-
----
-
 ## 🚀 Quick Start Guide
 
 ### 1. Hardware Assembly
@@ -145,19 +137,6 @@ pip install -r requirements.txt
 # Run the live 60 FPS Oscilloscope Cockpit
 python gui_cockpit/live_anomaly_cockpit.py
 ```
-
----
-
-## 🏛️ Academic Affiliation & Acknowledgments
-
-* **Institution**: Easwari Engineering College (SRM Group), Department of Electronics and Communication Engineering.
-* **Academic Leadership**:
-  * **Dr. Deiva Sundari P** (Principal)
-  * **Dr. Senthamizh Selvi R** (Head of Department)
-  * **Dr. Diana D** (Project Supervisor)
-* **Industry Mentorship & Technical Support**:
-  * **Renesas Electronics India Team** (Surendra, Ashish Kumar, Sweta Yadav)
-  * **Altium Team**
 
 ---
 
