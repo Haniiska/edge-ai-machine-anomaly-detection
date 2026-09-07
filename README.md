@@ -1,8 +1,8 @@
 # Real-Time Physical Machine Anomaly Detection & True Oscilloscope Cockpit
-### A Hardware-Deterministic Sub-20ms Edge Diagnostic Framework on Renesas FPB-RA6E2
+### A Hardware-Deterministic Sub-20ms Edge Diagnostic Framework for Industrial Rotating Appliances
 
-[![Platform: Renesas RA6E2](https://img.shields.io/badge/Platform-Renesas%20RA6E2%20(Arm%20Cortex--M33)-007acc.svg)](https://www.renesas.com/)
-[![Firmware: e2 studio / FSP](https://img.shields.io/badge/IDE-e%C2%B2%20studio%20%2F%20FSP-orange.svg)](https://www.renesas.com/software-tool/e2studio)
+[![Platform: Arm Cortex-M33](https://img.shields.io/badge/Platform-Arm%20Cortex--M33%20(200%20MHz)-007acc.svg)](https://www.arm.com/)
+[![Firmware: Embedded C](https://img.shields.io/badge/Firmware-Embedded%20C%20%2F%20FSP-orange.svg)](firmware/)
 [![Cockpit: Python 60 FPS](https://img.shields.io/badge/Cockpit-Python%2060%20FPS%20Tkinter-blue.svg)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -12,7 +12,7 @@
 
 Industrial electromechanical rotating appliances (e.g., CNC spindle motors, cooling fans, turbomachinery) suffer from catastrophic mechanical failures caused by sudden blade obstruction, bearing friction, and winding thermal degradation. Traditional IoT monitoring frameworks rely on cloud-connected telemetry, incurring high latency (>500 ms) and vulnerability to network failure.
 
-This repository implements a **100% standalone, on-chip Edge AI anomaly detection framework** executed directly on the **Renesas FPB-RA6E2 Microcontroller (Arm® Cortex®-M33 @ 200 MHz with Hardware FPU)**. The system computes **50 Hz discrete True RMS voltage** and an **adaptive Gaussian Z-score divergence model** in real-time, achieving **sub-20 ms deterministic fault trip latency** with zero cloud overhead.
+This repository implements a **100% standalone, on-chip Edge AI anomaly detection framework** executed directly on an **Arm® Cortex®-M33 Core @ 200 MHz with Hardware FPU (R7FA6E2 MCU)**. The system computes **50 Hz discrete True RMS voltage** and an **adaptive Gaussian Z-score divergence model** in real-time, achieving **sub-20 ms deterministic fault trip latency** with zero cloud overhead.
 
 ---
 
@@ -83,16 +83,16 @@ $$\text{Fault State} = \begin{cases} \text{CRITICAL ANOMALY}, & \text{if } Z \ge
 ### 1. Hardware Assembly
 1. Connect 12V DC Adapter (+) to Fan Red Wire (+).
 2. Connect 12V DC Adapter (-) to Fan Black Wire (-).
-3. Connect Common Ground jumper wire from Adapter (-) to **Renesas Board GND**.
+3. Connect Common Ground jumper wire from Adapter (-) to **MCU Board GND**.
 4. Connect Voltage Divider output ($10\,\text{k}\Omega / 2.7\,\text{k}\Omega$) to **Pin 6 (A0 / P000)**.
 5. Connect Optical IR Sensor `VCC` $\to$ **5V**, `GND` $\to$ **GND**, `OUT` $\to$ **Pin 7 (P001)**.
-6. Plug Renesas Micro-USB cable into your laptop.
+6. Plug MCU Micro-USB cable into your laptop.
 
 ### 2. Building Firmware (e² studio)
-1. Open **Renesas e² studio IDE** and import the project.
+1. Open **e² studio IDE** and import the project.
 2. Ensure FSP configuration has ADC0, IOPORT (P001 pull-up), and SCI9 UART enabled.
 3. Replace `src/hal_entry.c` with the code in `firmware/hal_entry.c`.
-4. Build project (`Ctrl + B`) and flash onto the **Renesas FPB-RA6E2** board via J-Link.
+4. Build project (`Ctrl + B`) and flash onto the microcontroller board via J-Link.
 
 ### 3. Launching 60 FPS Operator Cockpit
 ```bash
