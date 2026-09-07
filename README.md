@@ -10,15 +10,17 @@
 
 ## 📌 Executive Summary
 
-Industrial electromechanical rotating appliances (e.g., CNC spindle motors, cooling fans, turbomachinery) suffer from catastrophic mechanical failures caused by sudden blade obstruction, bearing friction, and winding thermal degradation. Traditional IoT monitoring frameworks rely on cloud-connected telemetry, incurring high latency (>500 ms) and vulnerability to network dropout.
+Industrial electromechanical rotating appliances (e.g., CNC spindle motors, cooling fans, turbomachinery) suffer from catastrophic mechanical failures caused by sudden blade obstruction, bearing friction, and winding thermal degradation. Traditional IoT monitoring frameworks rely on cloud-connected telemetry, incurring high latency (>500 ms) and vulnerability to network failure.
 
 This repository implements a **100% standalone, on-chip Edge AI anomaly detection framework** executed directly on the **Renesas FPB-RA6E2 Microcontroller (Arm® Cortex®-M33 @ 200 MHz with Hardware FPU)**. The system computes **50 Hz discrete True RMS voltage** and an **adaptive Gaussian Z-score divergence model** in real-time, achieving **sub-20 ms deterministic fault trip latency** with zero cloud overhead.
 
 ---
 
-## 📸 Experimental Benchtop Hardware Setup
+## 📸 Real Experimental Benchtop Hardware Setup
 
-![Hardware Benchtop Setup](hardware/renesas_hardware_setup.jpg)
+| Full Live Experimental Benchtop Setup | Close-Up Board & Sensor Interfacing |
+| :---: | :---: |
+| ![Live Benchtop Setup](hardware/renesas_hardware_setup.jpg) | ![Board Wiring Close-Up](hardware/board_wiring_closeup.jpg) |
 
 ### Hardware Interfacing & Pinout Configuration
 | Header Pin | MCU Port | Signal Domain | Connected Component | Function & Electrical Specification |
@@ -31,36 +33,19 @@ This repository implements a **100% standalone, on-chip Edge AI anomaly detectio
 
 ---
 
-## 🏗️ 4-Stage System Architecture
+## 🖥️ Live Operator Oscilloscope Cockpit (Actual Screenshots)
 
-![Master Academic Poster](docs/figures/poster_master.png)
+### 1. State 1: Physical 12V Fan is Turned OFF (Standby)
+*Strict dead-center 0.0 mV baseline, 0.00 W power, zero statistical divergence ($0.00\sigma$), silent status.*
+![State 1 Standby](docs/figures/cockpit_state1_standby.png)
 
-```
-  ┌────────────────────────────────────────────────────────────────────────────────────────┐
-  │  STAGE 1: Physical Machine & Sensors                                                   │
-  │  • 12V DC Brushless Fan (Active dynamic load, commutation AC ripple)                   │
-  │  • Precision Potential Divider (R1 = 10 kΩ, R2 = 2.7 kΩ stepping 12V down to 0-3.3V)   │
-  │  • Optical IR Obstacle Sensor (Non-contact spatial phase monitoring on Pin 7)          │
-  ├────────────────────────────────────────────────────────────────────────────────────────┤
-  │  STAGE 2: 12-Bit Fast ADC Signal Acquisition                                           │
-  │  • ADC0 Channel 0 (Port P000 / Pin 6) sampling at 50 Hz deterministic rate             │
-  │  • 4096 Discrete Quantization Steps (0.805 mV per LSB resolution)                       │
-  │  • 32-sample sliding acquisition buffer window per inference cycle                     │
-  ├────────────────────────────────────────────────────────────────────────────────────────┤
-  │  STAGE 3: Renesas RA6E2 Embedded C Firmware Engine                                     │
-  │  • Arm® Cortex®-M33 Core @ 200 MHz with single-precision floating-point unit (FPU)     │
-  │  • Discrete True RMS: V_RMS = sqrt( 1/N * Σ(V_i²) )                                    │
-  │  • Adaptive Exponential Baseline Tracking: μ_t = 0.95*μ_{t-1} + 0.05*V_RMS             │
-  │  • Gaussian Statistical Z-Score Divergence: Z = |V_RMS - μ| / σ                        │
-  │  • Fault Classification: Flagged Critical Anomaly when Z >= 2.0σ or Pin 7 == LOW       │
-  ├────────────────────────────────────────────────────────────────────────────────────────┤
-  │  STAGE 4: 60 FPS Oscilloscope Cockpit & Emergency Alert                                │
-  │  • Direct memory reading from SRAM address 0x200004a8 via SEGGER J-Link SWD            │
-  │  • Single-trace zero-ghosting canvas rendering (Normal Cyan Wave vs Red Anomaly Wave)  │
-  │  • Live Telemetry Cards: Voltage (1085 mV), Power (0.91 W), TSN Silicon Temp (29.4 °C) │
-  │  • 1400 Hz Industrial Emergency Siren synthesized directly in laptop RAM on fault      │
-  └────────────────────────────────────────────────────────────────────────────────────────┘
-```
+### 2. State 2: 12V Fan Active & Spinning Normally (Nominal Free-Spin)
+*Clean 60 FPS cyan sinusoidal commutation waveform ($3248.4\,\text{mV}$ RMS, $0.91\,\text{W}$ power, $0.35\sigma$ in-control healthy score).*
+![State 2 Normal](docs/figures/cockpit_state2_normal.png)
+
+### 3. State 3: Critical Anomaly (IR Blade Obstruction / Stall Alert)
+*Violent red harmonic distortion spikes ($3300.0\,\text{mV}$ saturation, $5.20\sigma$ critical divergence, 1400 Hz acoustic siren alarm active).*
+![State 3 Anomaly](docs/figures/cockpit_state3_anomaly.png)
 
 ---
 
@@ -68,26 +53,26 @@ This repository implements a **100% standalone, on-chip Edge AI anomaly detectio
 
 ### 1. Discrete True RMS Computation
 To capture high-frequency motor commutation ripple and avoid the information loss of simple arithmetic averaging, True RMS is computed across $N=32$ discrete samples:
-$$V_{	ext{RMS}} = \sqrt{rac{1}{N} \sum_{i=1}^{N} V_i^2}$$
+$$V_{\text{RMS}} = \sqrt{\frac{1}{N} \sum_{i=1}^{N} V_i^2}$$
 
 ### 2. Adaptive Exponential Baseline Filter
 To prevent false alarms caused by natural thermal drift and supply fluctuations, the baseline mean $\mu_t$ dynamically adapts using an Exponential Moving Average (EMA):
-$$\mu_t = 0.95 \cdot \mu_{t-1} + 0.05 \cdot V_{	ext{RMS}}$$
+$$\mu_t = 0.95 \cdot \mu_{t-1} + 0.05 \cdot V_{\text{RMS}}$$
 
 ### 3. Gaussian Statistical Divergence (Z-Score)
-Anomalies are detected by measuring statistical deviation from the learned baseline in units of standard deviation ($\sigma = 25.0\,	ext{mV}$):
-$$Z = rac{|V_{	ext{RMS}} - \mu_t|}{\sigma_{	ext{base}}}$$
-$$	ext{Fault State} = egin{cases} 	ext{CRITICAL ANOMALY}, & 	ext{if } Z \ge 2.0\sigma 	ext{ or } 	ext{Pin 7} = 	ext{LOW} \ 	ext{HEALTHY NOMINAL}, & 	ext{otherwise} \end{cases}$$
+Anomalies are detected by measuring statistical deviation from the learned baseline in units of standard deviation ($\sigma = 25.0\,\text{mV}$):
+$$Z = \frac{|V_{\text{RMS}} - \mu_t|}{\sigma_{\text{base}}}$$
+$$\text{Fault State} = \begin{cases} \text{CRITICAL ANOMALY}, & \text{if } Z \ge 2.0\sigma \text{ or } \text{Pin 7} = \text{LOW} \\ \text{HEALTHY NOMINAL}, & \text{otherwise} \end{cases}$$
 
 ---
 
-## 📊 Publication Figures
+## 📊 Publication Figures & Flowcharts
 
-| Figure 1: System Architecture | Figure 2: Firmware Flowchart |
+| Figure 1: System Hardware Architecture | Figure 2: Firmware Execution Flowchart |
 | :---: | :---: |
 | ![Fig 1](docs/figures/fig1_system_architecture.png) | ![Fig 2](docs/figures/fig2_firmware_flowchart.png) |
-| **Figure 3: Gaussian Z-Score Model** | **Figure 4: Multi-State Oscilloscope Waveforms** |
-| ![Fig 3](docs/figures/fig3_gaussian_zscore_model.png) | ![Fig 4](docs/figures/fig4_waveform_comparison.png) |
+| **Figure 3: Gaussian Statistical Model** | **Master Academic Poster (300 DPI)** |
+| ![Fig 3](docs/figures/fig3_gaussian_zscore_model.png) | ![Poster](docs/figures/poster_master.png) |
 
 ---
 
@@ -97,8 +82,8 @@ $$	ext{Fault State} = egin{cases} 	ext{CRITICAL ANOMALY}, & 	ext{if } Z \ge 2.0
 1. Connect 12V DC Adapter (+) to Fan Red Wire (+).
 2. Connect 12V DC Adapter (-) to Fan Black Wire (-).
 3. Connect Common Ground jumper wire from Adapter (-) to **Renesas Board GND**.
-4. Connect Voltage Divider output ($10\,	ext{k}\Omega / 2.7\,	ext{k}\Omega$) to **Pin 6 (A0 / P000)**.
-5. Connect Optical IR Sensor `VCC` $	o$ **5V**, `GND` $	o$ **GND**, `OUT` $	o$ **Pin 7 (P001)**.
+4. Connect Voltage Divider output ($10\,\text{k}\Omega / 2.7\,\text{k}\Omega$) to **Pin 6 (A0 / P000)**.
+5. Connect Optical IR Sensor `VCC` $\to$ **5V**, `GND` $\to$ **GND**, `OUT` $\to$ **Pin 7 (P001)**.
 6. Plug Renesas Micro-USB cable into your laptop.
 
 ### 2. Building Firmware (e² studio)
@@ -110,7 +95,7 @@ $$	ext{Fault State} = egin{cases} 	ext{CRITICAL ANOMALY}, & 	ext{if } Z \ge 2.0
 ### 3. Launching 60 FPS Operator Cockpit
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/renesas-ra6e2-edge-ai-anomaly-detection.git
+git clone https://github.com/Haniiska/renesas-ra6e2-edge-ai-anomaly-detection.git
 cd renesas-ra6e2-edge-ai-anomaly-detection
 
 # Install dependencies
