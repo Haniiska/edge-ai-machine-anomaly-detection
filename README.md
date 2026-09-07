@@ -138,10 +138,6 @@ pip install -r requirements.txt
 python gui_cockpit/live_anomaly_cockpit.py
 ```
 
-### Cockpit Keyboard Shortcuts:
-* **`Shift` / `Spacebar`**: Toggle Normal Waveform $\iff$ Fan OFF (0.0 mV Flat Line).
-* **`Ctrl` / Canvas Click**: Toggle Anomaly State (Violent Red Spikes + 1400 Hz Industrial Siren Alarm).
-
 ---
 
 ## 🏛️ Academic Affiliation & Acknowledgments
