@@ -104,8 +104,16 @@ $$\text{Fault State} = \begin{cases} \text{CRITICAL ANOMALY}, & \text{if } Z \ge
 | Figure 1: System Hardware Architecture | Figure 2: Firmware Execution Flowchart |
 | :---: | :---: |
 | ![Fig 1](docs/figures/fig1_system_architecture.png) | ![Fig 2](docs/figures/fig2_firmware_flowchart.png) |
-| **Figure 3: Gaussian Statistical Model** | **Master Academic Poster (300 DPI)** |
-| ![Fig 3](docs/figures/fig3_gaussian_zscore_model.png) | ![Poster](docs/figures/poster_master.png) |
+| **Figure 3: Gaussian Statistical Model** | **Figure 4: Multi-State Waveforms** |
+| ![Fig 3](docs/figures/fig3_gaussian_zscore_model.png) | ![Fig 4](docs/figures/fig4_waveform_comparison.png) |
+
+---
+
+## 🎨 Master Academic Research Poster (300 DPI)
+
+<p align="center">
+  <img src="docs/figures/poster_master.png" alt="Master Academic Poster" width="800"/>
+</p>
 
 ---
 
