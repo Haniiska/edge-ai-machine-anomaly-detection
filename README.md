@@ -39,13 +39,23 @@ Traditional monitoring frameworks rely on cloud telemetry, incurring high latenc
 
 ## 📸 Real Experimental Benchtop Hardware Validation
 
+### 1. End-to-End Live Benchtop Operation
 | Nominal Free-Spin Operation (Cyan Sine Wave) | Live Physical Fault Induction (Obstacle → Red Spikes) |
 | :---: | :---: |
 | ![Nominal Benchtop Setup](hardware/renesas_hardware_setup.jpg) | ![Live Anomaly Demo](hardware/live_physical_anomaly_demo.jpg) |
-| **Close-Up Board & Sensor Interfacing** | **12V DC Fan Dynamic Load** |
-| ![Board Wiring Close-Up](hardware/board_wiring_closeup.jpg) | *12V Brushless motor with precision $10\,\text{k}\Omega / 2.7\,\text{k}\Omega$ divider & optical IR sensor* |
+| *Nominal free-spin with clean 60 FPS cyan sinusoidal waveform* | *Live physical blade obstruction inducing violent red spikes & 1400 Hz siren* |
 
-### Hardware Interfacing & Pinout Configuration
+### 2. Microcontroller & Sensor Interfacing Close-Up
+<p align="center">
+  <img src="hardware/board_wiring_closeup.jpg" alt="Board Wiring Close-Up" width="600"/>
+  <br>
+  <em>Direct physical interfacing: 12V DC Brushless motor load, precision 10 kΩ / 2.7 kΩ potential divider network, and active-low optical IR sensor connected to MCU headers.</em>
+</p>
+
+---
+
+## 🔌 Hardware Interfacing & Pinout Configuration
+
 | Header Pin | MCU Port | Signal Domain | Connected Component | Function & Electrical Specification |
 | :--- | :--- | :--- | :--- | :--- |
 | **Pin 6 (A0)** | **`P000`** | Analog Input | Voltage Divider Output | 12-Bit ADC Channel 0 (0.805 mV/LSB, measures commutation ripple) |
@@ -118,8 +128,8 @@ $$\text{Fault State} = \begin{cases} \text{CRITICAL ANOMALY}, & \text{if } Z \ge
 ### 3. Launching 60 FPS Operator Cockpit
 ```bash
 # Clone the repository
-git clone https://github.com/Haniiska/renesas-ra6e2-edge-ai-anomaly-detection.git
-cd renesas-ra6e2-edge-ai-anomaly-detection
+git clone https://github.com/Haniiska/edge-ai-machine-anomaly-detection.git
+cd edge-ai-machine-anomaly-detection
 
 # Install dependencies
 pip install -r requirements.txt
