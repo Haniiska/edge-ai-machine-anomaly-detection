@@ -1,5 +1,5 @@
-# Real-Time Physical Machine Anomaly Detection & True Oscilloscope Cockpit
-### A Hardware-Deterministic Sub-20ms Edge Diagnostic Framework for Industrial Rotating Appliances
+# Real-Time Electromechanical & Physical Anomaly Detection with True Oscilloscope Cockpit
+### A Hardware-Deterministic Sub-20ms Edge Diagnostic Framework for Internal Faults & External Obstructions
 
 [![Platform: Arm Cortex-M33](https://img.shields.io/badge/Platform-Arm%20Cortex--M33%20(200%20MHz)-007acc.svg)](https://www.arm.com/)
 [![Firmware: Embedded C](https://img.shields.io/badge/Firmware-Embedded%20C%20%2F%20FSP-orange.svg)](firmware/)
@@ -10,9 +10,30 @@
 
 ## 📌 Executive Summary
 
-Industrial electromechanical rotating appliances (e.g., CNC spindle motors, cooling fans, turbomachinery) suffer from catastrophic mechanical failures caused by sudden blade obstruction, bearing friction, and winding thermal degradation. Traditional IoT monitoring frameworks rely on cloud-connected telemetry, incurring high latency (>500 ms) and vulnerability to network failure.
+Industrial electromechanical rotating machinery (e.g., CNC spindle motors, cooling turbomachinery, robotics) suffers from two distinct failure modes:
+1. **Internal Electromechanical Degradation**: Winding insulation breakdown, bearing friction, commutation harmonic distortion, and silicon thermal drift.
+2. **External Physical Mechanical Failures**: Sudden rotor/blade jamming, foreign object obstruction, and spindle stall.
 
-This repository implements a **100% standalone, on-chip Edge AI anomaly detection framework** executed directly on an **Arm® Cortex®-M33 Core @ 200 MHz with Hardware FPU (R7FA6E2 MCU)**. The system computes **50 Hz discrete True RMS voltage** and an **adaptive Gaussian Z-score divergence model** in real-time, achieving **sub-20 ms deterministic fault trip latency** with zero cloud overhead.
+Traditional monitoring frameworks rely on cloud telemetry, incurring high latencies (>500 ms) and network dropouts. This repository implements a **100% standalone, on-chip Edge AI anomaly detection framework** executed directly on an **Arm® Cortex®-M33 Core @ 200 MHz with Hardware FPU (R7FA6E2 MCU)**. By synchronously fusing **12-bit ADC electrical commutation dynamics** with **optical spatial phase sensing**, the system achieves **sub-20 ms deterministic fault trip latency** across both internal and external anomalies with zero cloud overhead.
+
+---
+
+## 🔄 Dual-Mode Comprehensive Fault Coverage
+
+```
+  ┌────────────────────────────────────────────────────────────────────────────────────────┐
+  │                      DUAL-MODE FAULT DETECTION ARCHITECTURE                            │
+  ├────────────────────────────────────────────────────┬───────────────────────────────────┤
+  │  ⚡ MODE A: INTERNAL ELECTROMECHANICAL FAULTS      │  🚨 MODE B: EXTERNAL PHYSICAL     │
+  │     (Time-Domain Signal Processing via ADC)        │     (Spatial Optical Detection)   │
+  ├────────────────────────────────────────────────────┼───────────────────────────────────┤
+  │  • 12-Bit Fast ADC0 (Pin 6 / P000 @ 0.805 mV/LSB)  │  • Active-Low Optical IR (Pin 7)  │
+  │  • Discrete 50 Hz True RMS: V_RMS = sqrt(ΣV²/N)    │  • Blade Jamming / Rotor Seizure  │
+  │  • Adaptive Exponential Baseline Filter (EMA)      │  • Foreign Object Obstruction     │
+  │  • Gaussian Z-Score Divergence (Flagged if Z≥2.0σ) │  • Instant Emergency Safety Trip  │
+  │  • Silicon Junction Thermal Diode (TSN: 29.4 °C)   │  • 1400 Hz Acoustic Siren Alert   │
+  └────────────────────────────────────────────────────┴───────────────────────────────────┘
+```
 
 ---
 
@@ -45,7 +66,7 @@ This repository implements a **100% standalone, on-chip Edge AI anomaly detectio
 *Clean 60 FPS cyan sinusoidal commutation waveform ($3248.4\,\text{mV}$ RMS, $0.91\,\text{W}$ power, $0.35\sigma$ in-control healthy score).*
 ![State 2 Normal](docs/figures/cockpit_state2_normal.png)
 
-### 3. State 3: Critical Anomaly (IR Blade Obstruction / Stall Alert)
+### 3. State 3: Critical Anomaly (Internal Stall / IR Blade Obstruction Alert)
 *Violent red harmonic distortion spikes ($3300.0\,\text{mV}$ saturation, $5.20\sigma$ critical divergence, 1400 Hz acoustic siren alarm active).*
 ![State 3 Anomaly](docs/figures/cockpit_state3_anomaly.png)
 
@@ -53,7 +74,7 @@ This repository implements a **100% standalone, on-chip Edge AI anomaly detectio
 
 ## 📐 Mathematical Formulations
 
-### 1. Discrete True RMS Computation
+### 1. Discrete True RMS Computation (Internal Health)
 To capture high-frequency motor commutation ripple and avoid the information loss of simple arithmetic averaging, True RMS is computed across $N=32$ discrete samples:
 $$V_{\text{RMS}} = \sqrt{\frac{1}{N} \sum_{i=1}^{N} V_i^2}$$
 
