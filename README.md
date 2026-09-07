@@ -16,11 +16,13 @@ This repository implements a **100% standalone, on-chip Edge AI anomaly detectio
 
 ---
 
-## 📸 Real Experimental Benchtop Hardware Setup
+## 📸 Real Experimental Benchtop Hardware Validation
 
-| Full Live Experimental Benchtop Setup | Close-Up Board & Sensor Interfacing |
+| Nominal Free-Spin Operation (Cyan Sine Wave) | Live Physical Fault Induction (Obstacle → Red Spikes) |
 | :---: | :---: |
-| ![Live Benchtop Setup](hardware/renesas_hardware_setup.jpg) | ![Board Wiring Close-Up](hardware/board_wiring_closeup.jpg) |
+| ![Nominal Benchtop Setup](hardware/renesas_hardware_setup.jpg) | ![Live Anomaly Demo](hardware/live_physical_anomaly_demo.jpg) |
+| **Close-Up Board & Sensor Interfacing** | **12V DC Fan Dynamic Load** |
+| ![Board Wiring Close-Up](hardware/board_wiring_closeup.jpg) | *12V Brushless motor with precision $10\,\text{k}\Omega / 2.7\,\text{k}\Omega$ divider & optical IR sensor* |
 
 ### Hardware Interfacing & Pinout Configuration
 | Header Pin | MCU Port | Signal Domain | Connected Component | Function & Electrical Specification |
